@@ -150,7 +150,7 @@
 
 <script>
     const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBfAQVTVAHOnwwyNHd5p-C5XRlnPuQpoCiVKL0Q3xRVS6F2pMsZA2Izi2vR0Yeea7CqOyFRzmJhdng/pub?gid=0&single=true&output=csv";
-    const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbycZt1tTHzhMPSqDo1ipjUVDt9TfXCgMgpl3S9JnJkFIX9wO8WSJFu_-Bue0f62sbD9wA/exec";
+    const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbw79AYFFcx-WcOallv-G8dMpKmL2bVSU257fqv2PsjSESR_ljsk2DDghs5W6ToBhKP2gA/exec";
 
     let baseGeral = [];
 
@@ -308,7 +308,6 @@
         document.getElementById("checkAll").checked = Array.from(checkboxes).every(chk => chk.checked);
     }
 
-    // ✅ IMPLEMENTAÇÃO DA MEMÓRIA DE PREENCHIMENTO
     window.toggleCamposJustificativa = function(i) {
         const presenca = document.getElementById(`presenca-${i}`).value;
         const faltas = document.getElementById(`faltas-${i}`);
@@ -316,7 +315,6 @@
         const ferias = document.getElementById(`ferias-${i}`);
 
         if (presenca === "integral") {
-            // Salva na memória se houver valor
             if (faltas.value) faltas.dataset.memoria = faltas.value;
             if (atestados.value) atestados.dataset.memoria = atestados.value;
             if (ferias.value) ferias.dataset.memoria = ferias.value;
@@ -329,7 +327,6 @@
             atestados.disabled = false; atestados.placeholder = "Datas...";
             ferias.disabled = false; ferias.placeholder = "Datas...";
 
-            // Restaura da memória se existir
             if (faltas.dataset.memoria) faltas.value = faltas.dataset.memoria;
             if (atestados.dataset.memoria) atestados.value = atestados.dataset.memoria;
             if (ferias.dataset.memoria) ferias.value = ferias.dataset.memoria;
@@ -424,13 +421,13 @@
             return;
         }
 
-        const registrosParaSalvar = [];
+        const registrosExportar = [];
         const dadosPDF = [];
-        const linhasTabelaHTML = document.querySelectorAll("#tabelaBody tr");
+        const dataAgora = new Date();
+        const dataReg = dataAgora.toLocaleDateString('pt-BR');
 
-        linhasTabelaHTML.forEach((tr, i) => {
-            const checkbox = document.getElementById(`check-${i}`);
-            if (checkbox && checkbox.checked) {
+        document.querySelectorAll("#tabelaBody tr").forEach((tr, i) => {
+            if (document.getElementById(`check-${i}`).checked) {
                 const mat = tr.cells[1].innerText;
                 const nome = tr.cells[2].innerText;
                 const lotacaoDaLinha = tr.cells[3].innerText;
@@ -441,7 +438,7 @@
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
                 
                 // Email adicionado na última coluna dos registros exportados
-                registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
+                registrosExportar.push([dataReg, mesAno, responsavel, mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
                 
                 dadosPDF.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
             }
@@ -454,12 +451,10 @@
         btn.innerHTML = "⏳ Processando...";
         btn.disabled = true;
 
-        const pacoteDeDados = { mesAno, vereador: responsavel, registros: registrosParaSalvar };
-
+        // Envia as colunas exatas direto para o script simples
         fetch(URL_APPSCRIPT_SALVAR, {
             method: "POST", mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify(pacoteDeDados)
+            body: JSON.stringify({ registros: registrosExportar })
         }).catch(erro => console.error("Erro ao salvar no Sheets:", erro));
 
         const { jsPDF } = window.jspdf;
@@ -526,7 +521,6 @@
         doc.setFontSize(8); doc.setFont("helvetica", "italic");
         doc.text("*Em caso de afastamento por motivos de saúde, superior a 3 dias, enviar o atestado à Saúde Ocupacional por meio de Comunicado específico do SPAE.", 14, finalY, { maxWidth: 182 });
 
-        const dataAgora = new Date();
         const dataFormatada = dataAgora.toLocaleDateString('pt-BR');
         const horaFormatada = dataAgora.toLocaleTimeString('pt-BR');
 
