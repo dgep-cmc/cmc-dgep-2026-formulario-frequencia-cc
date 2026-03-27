@@ -151,8 +151,8 @@
 <script>
     const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBfAQVTVAHOnwwyNHd5p-C5XRlnPuQpoCiVKL0Q3xRVS6F2pMsZA2Izi2vR0Yeea7CqOyFRzmJhdng/pub?gid=0&single=true&output=csv";
     
-    // Novo link atualizado
-    const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbw79AYFFcx-WcOallv-G8dMpKmL2bVSU257fqv2PsjSESR_ljsk2DDghs5W6ToBhKP2gA/exec";
+    // Novo link atualizado do Google Apps Script
+    const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbzJEnglU4OP9TZfKm7-dyjvd97wuWBoN8o9zIFHH8J0gYDi2WlvQtO__KwfdsB9FZgl4g/exec";
 
     let baseGeral = [];
 
@@ -272,7 +272,7 @@
                         <td class="align-middle">
                             <input class="form-check-input border-secondary check-servidor" type="checkbox" id="check-${i}" checked onclick="verificarChecksIndividuais(); limparErroDaLinha(${i})">
                         </td>
-                        <td class="text-secondary fw-bold text-start">${matricula}</td>
+                        <td class="text-secondary fw-bold text-start mat-valor">${matricula}</td>
                         <td class="text-dark text-start">${nome}</td>
                         <td class="text-muted text-start small">${lotacaoServidor}</td>
                         <td>
@@ -423,14 +423,14 @@
             return;
         }
 
-        const registrosParaSalvar = [];
+        const registrosExportar = [];
         const dadosPDF = [];
-        const linhasTabelaHTML = document.querySelectorAll("#tabelaBody tr");
+        const dataAgora = new Date();
+        const dataReg = dataAgora.toLocaleDateString('pt-BR');
 
-        linhasTabelaHTML.forEach((tr, i) => {
-            const checkbox = document.getElementById(`check-${i}`);
-            if (checkbox && checkbox.checked) {
-                const mat = tr.cells[1].innerText;
+        document.querySelectorAll("#tabelaBody tr").forEach((tr, i) => {
+            if (document.getElementById(`check-${i}`).checked) {
+                const mat = tr.querySelector('.mat-valor').innerText;
                 const nome = tr.cells[2].innerText;
                 const lotacaoDaLinha = tr.cells[3].innerText;
                 const periodo = document.getElementById(`periodo-${i}`).value || "-";
@@ -439,8 +439,8 @@
                 const atestados = document.getElementById(`atestados-${i}`).value || "-";
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
                 
-                // Variável emailResponsavel adicionada no envio para a planilha
-                registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
+                // Array enviada pro App Script COM o email no final
+                registrosExportar.push([dataReg, mesAno, responsavel, mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
                 
                 dadosPDF.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
             }
@@ -453,12 +453,10 @@
         btn.innerHTML = "⏳ Processando...";
         btn.disabled = true;
 
-        const pacoteDeDados = { mesAno, vereador: responsavel, registros: registrosParaSalvar };
-
+        // Envia as colunas exatas direto para o script simples
         fetch(URL_APPSCRIPT_SALVAR, {
             method: "POST", mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify(pacoteDeDados)
+            body: JSON.stringify({ registros: registrosExportar })
         }).catch(erro => console.error("Erro ao salvar no Sheets:", erro));
 
         const { jsPDF } = window.jspdf;
@@ -525,7 +523,6 @@
         doc.setFontSize(8); doc.setFont("helvetica", "italic");
         doc.text("*Em caso de afastamento por motivos de saúde, superior a 3 dias, enviar o atestado à Saúde Ocupacional por meio de Comunicado específico do SPAE.", 14, finalY, { maxWidth: 182 });
 
-        const dataAgora = new Date();
         const dataFormatada = dataAgora.toLocaleDateString('pt-BR');
         const horaFormatada = dataAgora.toLocaleTimeString('pt-BR');
 
