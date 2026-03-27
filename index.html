@@ -308,6 +308,7 @@
         document.getElementById("checkAll").checked = Array.from(checkboxes).every(chk => chk.checked);
     }
 
+    // ✅ IMPLEMENTAÇÃO DA MEMÓRIA DE PREENCHIMENTO
     window.toggleCamposJustificativa = function(i) {
         const presenca = document.getElementById(`presenca-${i}`).value;
         const faltas = document.getElementById(`faltas-${i}`);
@@ -315,6 +316,7 @@
         const ferias = document.getElementById(`ferias-${i}`);
 
         if (presenca === "integral") {
+            // Salva na memória se houver valor
             if (faltas.value) faltas.dataset.memoria = faltas.value;
             if (atestados.value) atestados.dataset.memoria = atestados.value;
             if (ferias.value) ferias.dataset.memoria = ferias.value;
@@ -327,6 +329,7 @@
             atestados.disabled = false; atestados.placeholder = "Datas...";
             ferias.disabled = false; ferias.placeholder = "Datas...";
 
+            // Restaura da memória se existir
             if (faltas.dataset.memoria) faltas.value = faltas.dataset.memoria;
             if (atestados.dataset.memoria) atestados.value = atestados.dataset.memoria;
             if (ferias.dataset.memoria) ferias.value = ferias.dataset.memoria;
@@ -436,7 +439,10 @@
                 const faltas = document.getElementById(`faltas-${i}`).value || "-";
                 const atestados = document.getElementById(`atestados-${i}`).value || "-";
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
-                registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
+                
+                // Email adicionado na última coluna dos registros exportados
+                registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
+                
                 dadosPDF.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
             }
         });
