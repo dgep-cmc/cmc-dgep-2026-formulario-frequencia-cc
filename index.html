@@ -28,9 +28,6 @@
         
         .form-check-input { cursor: pointer; transform: scale(1.2); }
 
-        /* =====================================================
-           ✅ NOVO: Estilos de validação obrigatória
-           ===================================================== */
         .input-invalido {
             border-color: #dc3545 !important;
             background-color: #fff5f5 !important;
@@ -40,31 +37,6 @@
             background-color: #fff5f5 !important;
         }
 
-        /* =====================================================
-           ✅ NOVO: Estilos de validação de formato de datas
-           ===================================================== */
-        .input-formato-ok {
-            border-color: #198754 !important;
-            background-color: #f0fff4 !important;
-        }
-        .input-formato-erro {
-            border-color: #fd7e14 !important;
-            background-color: #fff8f0 !important;
-            box-shadow: 0 0 0 2px rgba(253,126,20,0.15) !important;
-        }
-        .hint-formato {
-            font-size: 0.7rem;
-            margin-top: 3px;
-            display: none;
-            line-height: 1.3;
-        }
-        .hint-formato.visivel { display: block; }
-        .hint-formato.ok   { color: #198754; }
-        .hint-formato.erro { color: #fd7e14; }
-
-        /* =====================================================
-           ✅ NOVO: Estilos do toast de notificação
-           ===================================================== */
         #toast-container {
             position: fixed;
             top: 20px;
@@ -95,7 +67,6 @@
 </head>
 <body>
 
-<!-- ✅ NOVO: Container de toasts -->
 <div id="toast-container"></div>
 
 <div class="container-fluid mt-4 mb-5 px-4">
@@ -158,7 +129,6 @@
                 </table>
             </div>
 
-            <!-- ✅ NOVO: Área de resumo de erros de validação -->
             <div id="areaErros" class="d-none alert alert-danger mt-3 shadow-sm">
                 <h6 class="fw-bold mb-2">⛔ Corrija os erros antes de gerar o PDF:</h6>
                 <ul id="listaErros" class="mb-0 small"></ul>
@@ -184,9 +154,6 @@
 
     let baseGeral = [];
 
-    // =====================================================
-    // ✅ NOVO: Função de toast (substitui alert())
-    // =====================================================
     function mostrarToast(mensagem, tipo = 'aviso') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -195,12 +162,6 @@
         container.appendChild(toast);
         setTimeout(() => toast.remove(), 4000);
     }
-
-    // =====================================================
-    // ✅ NOVO: Regex de validação de datas
-    // Aceita: 15/03 | 15/03 e 20/03 | 15/03, 20/03 | 15/03 a 20/03
-    // =====================================================
-    const REGEX_PERIODO = /^(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2])(\s*[,e]\s*(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2]))*$|^(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2])\s+a\s+(0?[1-9]|[12]\d|3[01])\/(0?[1-9]|1[0-2])$/;
 
     window.addEventListener('DOMContentLoaded', () => {
         const data = new Date();
@@ -280,8 +241,6 @@
         const tbody = document.getElementById("tabelaBody");
         tbody.innerHTML = "";
         document.getElementById("checkAll").checked = true;
-
-        // ✅ NOVO: Limpa a área de erros ao trocar de responsável
         document.getElementById("areaErros").classList.add("d-none");
         document.getElementById("listaErros").innerHTML = "";
 
@@ -294,7 +253,6 @@
 
         if (servidores.length > 0) {
             document.getElementById("spanResponsavel").textContent = responsavelSelecionado;
-
             servidores.forEach((servidor, i) => {
                 const matricula = buscarValorInteligente(servidor, ["matricula"]);
                 const nome = buscarValorInteligente(servidor, ["nome"]);
@@ -325,19 +283,13 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="faltas-${i}" value="${diasFaltas}" placeholder="${placeholderNormal}" ${disabledAttr}
-                                oninput="validarCampoData(this, document.getElementById('hint-faltas-${i}')); limparErroDaLinha(${i})">
-                            <div class="hint-formato" id="hint-faltas-${i}"></div>
+                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="faltas-${i}" value="${diasFaltas}" placeholder="${placeholderNormal}" ${disabledAttr} oninput="limparErroDaLinha(${i})">
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="atestados-${i}" value="${diasAtestados}" placeholder="${placeholderNormal}" ${disabledAttr}
-                                oninput="validarCampoData(this, document.getElementById('hint-atestados-${i}')); limparErroDaLinha(${i})">
-                            <div class="hint-formato" id="hint-atestados-${i}"></div>
+                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="atestados-${i}" value="${diasAtestados}" placeholder="${placeholderNormal}" ${disabledAttr} oninput="limparErroDaLinha(${i})">
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="ferias-${i}" value="${diasFerias}" placeholder="${placeholderNormal}" ${disabledAttr}
-                                oninput="validarCampoData(this, document.getElementById('hint-ferias-${i}')); limparErroDaLinha(${i})">
-                            <div class="hint-formato" id="hint-ferias-${i}"></div>
+                            <input type="text" class="form-control form-control-sm input-text border-secondary mx-auto w-100" id="ferias-${i}" value="${diasFerias}" placeholder="${placeholderNormal}" ${disabledAttr} oninput="limparErroDaLinha(${i})">
                         </td>
                     </tr>`;
             });
@@ -361,27 +313,26 @@
         const faltas = document.getElementById(`faltas-${i}`);
         const atestados = document.getElementById(`atestados-${i}`);
         const ferias = document.getElementById(`ferias-${i}`);
+
         if (presenca === "integral") {
+            if (faltas.value) faltas.dataset.memoria = faltas.value;
+            if (atestados.value) atestados.dataset.memoria = atestados.value;
+            if (ferias.value) ferias.dataset.memoria = ferias.value;
+
             faltas.disabled = true; faltas.value = ""; faltas.placeholder = "-";
             atestados.disabled = true; atestados.value = ""; atestados.placeholder = "-";
             ferias.disabled = true; ferias.value = ""; ferias.placeholder = "-";
-            // ✅ NOVO: Limpa hints ao voltar para Integral
-            ['faltas', 'atestados', 'ferias'].forEach(campo => {
-                const hint = document.getElementById(`hint-${campo}-${i}`);
-                if (hint) { hint.className = 'hint-formato'; hint.textContent = ''; }
-                const el = document.getElementById(`${campo}-${i}`);
-                if (el) el.classList.remove('input-formato-ok', 'input-formato-erro', 'input-invalido');
-            });
         } else {
             faltas.disabled = false; faltas.placeholder = "Datas...";
             atestados.disabled = false; atestados.placeholder = "Datas...";
             ferias.disabled = false; ferias.placeholder = "Datas...";
+
+            if (faltas.dataset.memoria) faltas.value = faltas.dataset.memoria;
+            if (atestados.dataset.memoria) atestados.value = atestados.dataset.memoria;
+            if (ferias.dataset.memoria) ferias.value = ferias.dataset.memoria;
         }
     }
 
-    // =====================================================
-    // ✅ NOVO: Limpa erros visuais de uma linha ao corrigir
-    // =====================================================
     window.limparErroDaLinha = function(i) {
         const linha = document.getElementById(`linha-${i}`);
         if (!linha) return;
@@ -392,36 +343,6 @@
         });
     }
 
-    // =====================================================
-    // ✅ NOVO: Validação de formato de datas em tempo real
-    // =====================================================
-    window.validarCampoData = function(inputEl, hintEl) {
-        const valor = inputEl.value.trim();
-        if (!valor) {
-            inputEl.classList.remove('input-formato-ok', 'input-formato-erro', 'input-invalido');
-            hintEl.className = 'hint-formato';
-            hintEl.textContent = '';
-            return;
-        }
-        if (REGEX_PERIODO.test(valor)) {
-            inputEl.classList.remove('input-formato-erro', 'input-invalido');
-            inputEl.classList.add('input-formato-ok');
-            hintEl.className = 'hint-formato visivel ok';
-            hintEl.textContent = '✓ Formato válido';
-        } else {
-            inputEl.classList.remove('input-formato-ok');
-            inputEl.classList.add('input-formato-erro');
-            hintEl.className = 'hint-formato visivel erro';
-            hintEl.textContent = 'Use: 15/03 · 15/03 e 20/03 · 15/03, 20/03 · 15/03 a 20/03';
-        }
-    }
-
-    // =====================================================
-    // ✅ NOVO: Validação completa do formulário
-    // Regra 1: Período obrigatório
-    // Regra 2: Presença Parcial exige ao menos um campo
-    // Regra 3: Campos de data preenchidos com formato correto
-    // =====================================================
     function validarFormulario() {
         const linhas = document.querySelectorAll("#tabelaBody tr");
         const erros = [];
@@ -444,13 +365,11 @@
             const ferias = document.getElementById(`ferias-${i}`);
             const errosLinha = [];
 
-            // Regra 1: Período obrigatório
             if (!periodo.value.trim()) {
                 periodo.classList.add('input-invalido');
                 errosLinha.push("campo Período está vazio");
             }
 
-            // Regra 2: Presença Parcial sem justificativa
             if (presenca === "parcial") {
                 const temJustificativa = faltas.value.trim() || atestados.value.trim() || ferias.value.trim();
                 if (!temJustificativa) {
@@ -460,23 +379,6 @@
                     errosLinha.push("presença Parcial sem informar Faltas, Atestados ou Férias");
                 }
             }
-
-            // Regra 3: Formato de datas nos campos preenchidos
-            [
-                { el: faltas,    hint: document.getElementById(`hint-faltas-${i}`),    nomeCampo: "Faltas" },
-                { el: atestados, hint: document.getElementById(`hint-atestados-${i}`), nomeCampo: "Atestados/Afastamentos" },
-                { el: ferias,    hint: document.getElementById(`hint-ferias-${i}`),    nomeCampo: "Férias" }
-            ].forEach(({ el, hint, nomeCampo }) => {
-                const val = el.value.trim();
-                if (val && !REGEX_PERIODO.test(val)) {
-                    el.classList.add('input-invalido');
-                    if (hint) {
-                        hint.className = 'hint-formato visivel erro';
-                        hint.textContent = 'Use: 15/03 · 15/03 e 20/03 · 15/03, 20/03 · 15/03 a 20/03';
-                    }
-                    errosLinha.push(`campo ${nomeCampo} com formato inválido`);
-                }
-            });
 
             if (errosLinha.length > 0) {
                 valido = false;
@@ -491,7 +393,6 @@
             document.getElementById("areaErros").classList.remove("d-none");
             document.getElementById("areaErros").scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
         return valido;
     }
 
@@ -515,7 +416,6 @@
             return mostrarToast("E-mail inválido! Use obrigatoriamente um e-mail @cmc.pr.gov.br.", "erro");
         }
 
-        // ✅ NOVO: Executa validação antes de qualquer outra ação
         if (!validarFormulario()) {
             mostrarToast("Corrija os erros destacados antes de continuar.", "erro");
             return;
@@ -645,7 +545,7 @@
         doc.save(`Frequencia_${responsavel.replace(/\s+/g, '_')}_${ano}_${mes}.pdf`);
 
         setTimeout(() => {
-            const linkGoogleForms = "https://docs.google.com/forms/d/e/1FAIpQLScPBMjHVZLX2j8t-ivWfwrI3OXS7rh5oPDRlQr1tQyYx0BOpQ/viewform?usp=header";
+            const linkGoogleForms = "https://docs.google.com/forms/d/e/1FAIpQLSeJSKjTFnMK8XMNCqFni1l511WB5WUcmjwDfuRi_fnr5nwMaQ/viewform?usp=publish-editor";
             window.open(linkGoogleForms, "_blank");
             btn.innerHTML = textoOriginal;
             btn.disabled = false;
