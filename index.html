@@ -150,6 +150,8 @@
 
 <script>
     const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBfAQVTVAHOnwwyNHd5p-C5XRlnPuQpoCiVKL0Q3xRVS6F2pMsZA2Izi2vR0Yeea7CqOyFRzmJhdng/pub?gid=0&single=true&output=csv";
+    
+    // Novo link atualizado
     const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbw79AYFFcx-WcOallv-G8dMpKmL2bVSU257fqv2PsjSESR_ljsk2DDghs5W6ToBhKP2gA/exec";
 
     let baseGeral = [];
@@ -437,8 +439,9 @@
                 const atestados = document.getElementById(`atestados-${i}`).value || "-";
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
                 
-                // Email adicionado perfeitamente no final da array que vai pro Google Sheets
+                // Variável emailResponsavel adicionada no envio para a planilha
                 registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
+                
                 dadosPDF.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
             }
         });
