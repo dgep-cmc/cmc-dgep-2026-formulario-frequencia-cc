@@ -151,7 +151,7 @@
 <script>
     const LINK_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQBfAQVTVAHOnwwyNHd5p-C5XRlnPuQpoCiVKL0Q3xRVS6F2pMsZA2Izi2vR0Yeea7CqOyFRzmJhdng/pub?gid=0&single=true&output=csv";
     
-    // Novo link perfeitamente atualizado:
+    // O seu link definitivo:
     const URL_APPSCRIPT_SALVAR = "https://script.google.com/macros/s/AKfycbzDBtYCyM_1xGUU8-Qljsc1uDrCXro0bx_BQ8VscOX8tJAx2OlJfJsL2BQXW2S1nkY0/exec";
 
     let baseGeral = [];
@@ -272,7 +272,7 @@
                         <td class="align-middle">
                             <input class="form-check-input border-secondary check-servidor" type="checkbox" id="check-${i}" checked onclick="verificarChecksIndividuais(); limparErroDaLinha(${i})">
                         </td>
-                        <td class="text-secondary fw-bold text-start">${matricula}</td>
+                        <td class="text-secondary fw-bold text-start mat-valor">${matricula}</td>
                         <td class="text-dark text-start">${nome}</td>
                         <td class="text-muted text-start small">${lotacaoServidor}</td>
                         <td>
@@ -425,11 +425,11 @@
 
         const registrosParaSalvar = [];
         const dadosPDF = [];
-        const linhasTabelaHTML = document.querySelectorAll("#tabelaBody tr");
+        const dataAgora = new Date();
+        const dataReg = dataAgora.toLocaleDateString('pt-BR') + ' ' + dataAgora.toLocaleTimeString('pt-BR');
 
-        linhasTabelaHTML.forEach((tr, i) => {
-            const checkbox = document.getElementById(`check-${i}`);
-            if (checkbox && checkbox.checked) {
+        document.querySelectorAll("#tabelaBody tr").forEach((tr, i) => {
+            if (document.getElementById(`check-${i}`).checked) {
                 const mat = tr.cells[1].innerText;
                 const nome = tr.cells[2].innerText;
                 const lotacaoDaLinha = tr.cells[3].innerText;
@@ -439,8 +439,21 @@
                 const atestados = document.getElementById(`atestados-${i}`).value || "-";
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
                 
-                // Array enviada pro App Script COM o email no final
-                registrosParaSalvar.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias, emailResponsavel]);
+                // CORREÇÃO AQUI: Agora ele envia as 12 colunas completas para a planilha!
+                registrosParaSalvar.push([
+                    dataReg, 
+                    mesAno, 
+                    responsavel, 
+                    mat, 
+                    nome, 
+                    lotacaoDaLinha, 
+                    periodo, 
+                    presenca, 
+                    faltas, 
+                    atestados, 
+                    ferias, 
+                    emailResponsavel
+                ]);
                 
                 dadosPDF.push([mat, nome, lotacaoDaLinha, periodo, presenca, faltas, atestados, ferias]);
             }
@@ -525,7 +538,6 @@
         doc.setFontSize(8); doc.setFont("helvetica", "italic");
         doc.text("*Em caso de afastamento por motivos de saúde, superior a 3 dias, enviar o atestado à Saúde Ocupacional por meio de Comunicado específico do SPAE.", 14, finalY, { maxWidth: 182 });
 
-        const dataAgora = new Date();
         const dataFormatada = dataAgora.toLocaleDateString('pt-BR');
         const horaFormatada = dataAgora.toLocaleTimeString('pt-BR');
 
