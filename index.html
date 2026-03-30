@@ -425,6 +425,8 @@
 
         const registrosParaSalvar = [];
         const dadosPDF = [];
+        const dataAgora = new Date();
+        const dataReg = dataAgora.toLocaleDateString('pt-BR') + ' ' + dataAgora.toLocaleTimeString('pt-BR');
 
         document.querySelectorAll("#tabelaBody tr").forEach((tr, i) => {
             if (document.getElementById(`check-${i}`).checked) {
@@ -437,10 +439,12 @@
                 const atestados = document.getElementById(`atestados-${i}`).value || "-";
                 const ferias = document.getElementById(`ferias-${i}`).value || "-";
                 
-                // MANTIDO O FORMATO EXATO que o seu Google Script original aceita!
-                // O seu script sozinho vai adicionar a Data, Mês/Ano e o Responsável.
-                // Nós apenas passamos a "Matrícula" em diante, mais o "Email" lá no final.
+                // Agora enviamos as 12 colunas completinhas! 
+                // A Data, Mês/Ano e o Responsável estão de volta na "sacola" da planilha:
                 registrosParaSalvar.push([
+                    dataReg, 
+                    mesAno, 
+                    responsavel, 
                     mat, 
                     nome, 
                     lotacaoDaLinha, 
@@ -463,8 +467,6 @@
         btn.innerHTML = "⏳ Processando...";
         btn.disabled = true;
 
-        // O pacote vai completo: envia o MêsAno e Responsavel soltos, 
-        // e a tabela separada, do jeito que o seu script original pede!
         const pacoteDeDados = { mesAno, vereador: responsavel, registros: registrosParaSalvar };
 
         fetch(URL_APPSCRIPT_SALVAR, {
@@ -537,7 +539,6 @@
         doc.setFontSize(8); doc.setFont("helvetica", "italic");
         doc.text("*Em caso de afastamento por motivos de saúde, superior a 3 dias, enviar o atestado à Saúde Ocupacional por meio de Comunicado específico do SPAE.", 14, finalY, { maxWidth: 182 });
 
-        const dataAgora = new Date();
         const dataFormatada = dataAgora.toLocaleDateString('pt-BR');
         const horaFormatada = dataAgora.toLocaleTimeString('pt-BR');
 
